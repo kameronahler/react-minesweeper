@@ -1,5 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import TestData from '../../store/test.json'
+import { GameContextProvider } from '../../store/GameContextProvider'
+import ContextTest from '../ContextTest/ContextTest'
 
 export default function App() {
   const [gameSetup, setGameSetup] = useState(() => {
@@ -13,12 +15,18 @@ export default function App() {
       <header>
         <h1>Let's Play Minecraft</h1>
       </header>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 100px' }}>
-        {gameSetup.map((el, position) => {
-          return <button key={position}>{el.isBomb ? 'true' : 'false'}</button>
-        })}
-      </div>
-      <p>That's the whole game. Good job.</p>
+      <GameContextProvider>
+        <div
+          style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 100px' }}
+        >
+          {gameSetup.map((el, position) => {
+            return (
+              <button key={position}>{el.isBomb ? 'true' : 'false'}</button>
+            )
+          })}
+        </div>
+        <ContextTest />
+      </GameContextProvider>
     </div>
   )
 }
