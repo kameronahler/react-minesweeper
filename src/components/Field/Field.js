@@ -8,8 +8,8 @@ export default function Field() {
     <div
       style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(4, 50px',
-        gridTemplateRows: 'repeat(4,50px',
+        gridTemplateColumns: `repeat(${globalState.field.x}, 50px`,
+        gridTemplateRows: `repeat(${globalState.field.y}, 50px`,
       }}
     >
       {globalState.tiles.map((el, position) => {
