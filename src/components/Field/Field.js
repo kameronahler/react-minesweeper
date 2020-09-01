@@ -1,19 +1,9 @@
 import React, { useState, useContext } from 'react'
 import { GameContext } from '../../store/GlobalStateWrapper'
+import Tile from '../Tile/Tile'
 
 export default function Field() {
-  const [fieldContext, tilesContext, bombClick] = useContext(GameContext)
-  const [tilesState, setTilesState] = useState(tilesContext)
-
-  const tileDisplay = (el) => {
-    if (el.hidden) {
-      return ''
-    } else if (el.bomb) {
-      return 'bomb'
-    } else {
-      return el.index
-    }
-  }
+  const [fieldContext, tilesContext] = useContext(GameContext)
 
   return (
     <div
@@ -23,16 +13,8 @@ export default function Field() {
         gridTemplateRows: `repeat(${fieldContext.rows}, 50px`,
       }}
     >
-      {tilesState.map((el, index) => {
-        return (
-          <button
-            onClick={fieldContext.alive ? bombClick : null}
-            key={index}
-            data-index={index}
-          >
-            {tileDisplay(el)}
-          </button>
-        )
+      {tilesContext.map((el, index) => {
+        return <Tile key={index} dataIndex={index} el={el} />
       })}
       {!fieldContext.alive ? <p>Game Over</p> : ''}
     </div>
