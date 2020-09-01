@@ -1,5 +1,7 @@
 import React from 'react'
 import { GlobalStateWrapper } from '../../store/GlobalStateWrapper'
+
+// components
 import Field from '../Field/Field'
 
 export default function App() {

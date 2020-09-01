@@ -4,7 +4,7 @@ import TestData from './test.json'
 export const GameContext = React.createContext()
 
 export function GlobalStateWrapper({ children }) {
-  // field setup
+  // field state
   const [fieldContext, setFieldContext] = useState({
     alive: true,
     columns: 4,
@@ -12,7 +12,14 @@ export function GlobalStateWrapper({ children }) {
     total: TestData.length,
   })
 
-  // find edges helper
+  // add css variables to help with css layout
+  document.documentElement.style.setProperty(
+    '--global-columns',
+    fieldContext.columns
+  )
+  document.documentElement.style.setProperty('--global-rows', fieldContext.rows)
+
+  // edges
   function findEdgesHelper(i, step) {
     let edges = []
 
@@ -24,7 +31,7 @@ export function GlobalStateWrapper({ children }) {
     return edges
   }
 
-  // check if tile is on edge
+  // is tile on edge?
   const LEFT_TILES = findEdgesHelper(1, fieldContext.columns)
   const RIGHT_TILES = findEdgesHelper(fieldContext.rows, fieldContext.columns)
 
@@ -48,7 +55,7 @@ export function GlobalStateWrapper({ children }) {
     return RIGHT_TILES.find((el) => el === index) ? true : false
   }
 
-  // build bomb state
+  // tile state
   const [tilesContext, setTilesContext] = useState(
     TestData[0].test.map((el, i) => {
       return {
@@ -65,7 +72,7 @@ export function GlobalStateWrapper({ children }) {
     })
   )
 
-  // click
+  // click tile
   const bombClick = (e) => {
     const index = parseInt(e.currentTarget.dataset.index)
     let newTilesContext = [...tilesContext]

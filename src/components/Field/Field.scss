@@ -1,0 +1,5 @@
+.field {
+  display: grid;
+  grid-template-columns: repeat(var(--global-columns, 4), 50px);
+  grid-template-rows: repeat(var(--global-rows, 4), 50px);
+}
