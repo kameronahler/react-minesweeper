@@ -12,14 +12,15 @@ export function GlobalStateWrapper({ children }) {
     total: TestData[0].test.length,
   })
 
-  // add css variables to help with css layout
+  // css variables for grid layout
   document.documentElement.style.setProperty(
     '--global-columns',
     fieldState.columns
   )
   document.documentElement.style.setProperty('--global-rows', fieldState.rows)
 
-  // is tile on edge?
+  // helper for determining whether game tiles are on left or right
+  // we assign these once instead of running the loop for each tile
   function findEdgesHelper(i, step) {
     let edges = []
 
@@ -30,11 +31,10 @@ export function GlobalStateWrapper({ children }) {
 
     return edges
   }
-
-  // we assign these once instead of running the loop for each tile
   const LEFT_TILES = findEdgesHelper(0, fieldState.columns)
   const RIGHT_TILES = findEdgesHelper(fieldState.rows - 1, fieldState.columns)
 
+  // sets the edge keys for the tiles state
   function edges(i) {
     let returnObj = {}
     if (i >= 1 && i <= fieldState.columns) {
@@ -64,12 +64,12 @@ export function GlobalStateWrapper({ children }) {
     return returnObj
   }
 
-  // tile state
+  // tiles state
   const [tilesState, setTilesState] = useState(
     TestData[0].test.map((el, i) => {
       return {
         bomb: el,
-        edge: edges(),
+        edge: edges(i),
         hidden: true,
         id: i,
         text: null,
@@ -77,9 +77,9 @@ export function GlobalStateWrapper({ children }) {
     })
   )
 
-  // find neighbors
+  // examine neighbors on click
   function neighbors(e) {
-    let i = parseInt(e.currentTarget.dataset.index) + 1
+    let i = parseInt(e.currentTarget.dataset.index)
     let neighborTiles = []
 
     // bombs
