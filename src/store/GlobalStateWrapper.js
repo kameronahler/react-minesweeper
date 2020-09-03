@@ -71,7 +71,6 @@ export function GlobalStateWrapper({ children }) {
         bomb: el,
         edge: edges(i),
         hidden: true,
-        id: i,
         text: null,
       }
     })
