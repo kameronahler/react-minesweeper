@@ -65,7 +65,7 @@ export function GlobalStateWrapper({ children }) {
   }
 
   // tiles state
-  const [tilesState, setTilesState] = useState(
+  const [tiles, setTiles] = useState(
     TestData[0].test.map((el, i) => {
       return {
         bomb: el,
@@ -82,76 +82,76 @@ export function GlobalStateWrapper({ children }) {
     let neighborTiles = []
 
     // bombs
-    if (tilesState[i].edge.top) {
-      if (tilesState[i].edge.left) {
+    if (tiles[i].edge.top) {
+      if (tiles[i].edge.left) {
         neighborTiles = [
-          tilesState[i + 1].bomb, // r
-          tilesState[i + fieldState.rows + 1].bomb, // br
-          tilesState[i + fieldState.rows].bomb, // b
+          tiles[i + 1].bomb, // r
+          tiles[i + fieldState.rows + 1].bomb, // br
+          tiles[i + fieldState.rows].bomb, // b
         ]
-      } else if (tilesState[i].edge.right) {
+      } else if (tiles[i].edge.right) {
         neighborTiles = [
-          tilesState[i - 1].bomb, // l
-          tilesState[i + fieldState.rows - 1].bomb, // bl
-          tilesState[i + fieldState.rows].bomb, // b
-        ]
-      } else {
-        neighborTiles = [
-          tilesState[i - 1].bomb, // l
-          tilesState[i + 1].bomb, // r
-          tilesState[i + fieldState.rows - 1].bomb, // bl
-          tilesState[i + fieldState.rows].bomb, // b
-          tilesState[i + fieldState.rows + 1].bomb, // br
-        ]
-      }
-    } else if (tilesState[i].edge.bottom) {
-      if (tilesState[i].edge.left) {
-        neighborTiles = [
-          tilesState[i - fieldState.rows].bomb, // t
-          tilesState[i - fieldState.rows - 1].bomb, // tr
-          tilesState[i + 1].bomb, // r
-        ]
-      } else if (tilesState[i].edge.right) {
-        neighborTiles = [
-          tilesState[i - fieldState.rows - 1].bomb, // tl
-          tilesState[i - fieldState.rows].bomb, // t
-          tilesState[i - 1].bomb, // l
+          tiles[i - 1].bomb, // l
+          tiles[i + fieldState.rows - 1].bomb, // bl
+          tiles[i + fieldState.rows].bomb, // b
         ]
       } else {
         neighborTiles = [
-          tilesState[i - fieldState.rows - 1].bomb, // tl
-          tilesState[i - fieldState.rows].bomb, // t
-          tilesState[i - fieldState.rows - 1].bomb, // tr
-          tilesState[i - 1].bomb, // l
-          tilesState[i + 1].bomb, // r
+          tiles[i - 1].bomb, // l
+          tiles[i + 1].bomb, // r
+          tiles[i + fieldState.rows - 1].bomb, // bl
+          tiles[i + fieldState.rows].bomb, // b
+          tiles[i + fieldState.rows + 1].bomb, // br
         ]
       }
-    } else if (tilesState[i].edge.left) {
+    } else if (tiles[i].edge.bottom) {
+      if (tiles[i].edge.left) {
+        neighborTiles = [
+          tiles[i - fieldState.rows].bomb, // t
+          tiles[i - fieldState.rows - 1].bomb, // tr
+          tiles[i + 1].bomb, // r
+        ]
+      } else if (tiles[i].edge.right) {
+        neighborTiles = [
+          tiles[i - fieldState.rows - 1].bomb, // tl
+          tiles[i - fieldState.rows].bomb, // t
+          tiles[i - 1].bomb, // l
+        ]
+      } else {
+        neighborTiles = [
+          tiles[i - fieldState.rows - 1].bomb, // tl
+          tiles[i - fieldState.rows].bomb, // t
+          tiles[i - fieldState.rows - 1].bomb, // tr
+          tiles[i - 1].bomb, // l
+          tiles[i + 1].bomb, // r
+        ]
+      }
+    } else if (tiles[i].edge.left) {
       neighborTiles = [
-        tilesState[i - fieldState.rows].bomb, // t
-        tilesState[i - fieldState.rows - 1].bomb, // tr
-        tilesState[i + 1].bomb, // r
-        tilesState[i + fieldState.rows + 1].bomb, // br
-        tilesState[i + fieldState.rows].bomb, // b
+        tiles[i - fieldState.rows].bomb, // t
+        tiles[i - fieldState.rows - 1].bomb, // tr
+        tiles[i + 1].bomb, // r
+        tiles[i + fieldState.rows + 1].bomb, // br
+        tiles[i + fieldState.rows].bomb, // b
       ]
-    } else if (tilesState[i].edge.right) {
+    } else if (tiles[i].edge.right) {
       neighborTiles = [
-        tilesState[i - fieldState.rows].bomb, // t
-        tilesState[i - fieldState.rows - 1].bomb, // tl
-        tilesState[i - 1].bomb, // l
-        tilesState[i + fieldState.rows - 1].bomb, // bl
-        tilesState[i + fieldState.rows].bomb, // b
+        tiles[i - fieldState.rows].bomb, // t
+        tiles[i - fieldState.rows - 1].bomb, // tl
+        tiles[i - 1].bomb, // l
+        tiles[i + fieldState.rows - 1].bomb, // bl
+        tiles[i + fieldState.rows].bomb, // b
       ]
     } else {
       neighborTiles = [
-        tilesState[i - fieldState.rows - 1].bomb, // tl
-        tilesState[i - fieldState.rows].bomb, // t
-        tilesState[i - fieldState.rows - 1].bomb, // tr
-        tilesState[i - 1].bomb, // l
-        tilesState[i + 1].bomb, // r
-        tilesState[i + fieldState.rows - 1].bomb, // bl
-        tilesState[i + fieldState.rows].bomb, // b
-        tilesState[i + fieldState.rows + 1].bomb, // br
+        tiles[i - fieldState.rows - 1].bomb, // tl
+        tiles[i - fieldState.rows].bomb, // t
+        tiles[i - fieldState.rows - 1].bomb, // tr
+        tiles[i - 1].bomb, // l
+        tiles[i + 1].bomb, // r
+        tiles[i + fieldState.rows - 1].bomb, // bl
+        tiles[i + fieldState.rows].bomb, // b
+        tiles[i + fieldState.rows + 1].bomb, // br
       ]
     }
 
@@ -163,9 +163,9 @@ export function GlobalStateWrapper({ children }) {
   // click tile
   const bombClick = (e) => {
     const i = parseInt(e.currentTarget.dataset.index)
-    let tilesStateUpdate = [...tilesState]
+    let tilesStateUpdate = [...tiles]
 
-    if (tilesState[i].bomb) {
+    if (tiles[i].bomb) {
       // is bomb
       // update field to not alive
       let fieldStateUpdate = fieldState
@@ -179,21 +179,21 @@ export function GlobalStateWrapper({ children }) {
         newStateObj.text = newStateObj.bomb ? '!' : ''
         return newStateObj
       })
-      setTilesState(tilesStateUpdate)
+      setTiles(tilesStateUpdate)
     } else {
       // wasn't bomb
       // unhide tile and update text to neighbor bombs
-      let clickedTile = tilesState[i]
+      let clickedTile = tiles[i]
       clickedTile.hidden = false
       clickedTile.text = neighbors(e)
       tilesStateUpdate[i] = clickedTile
-      setTilesState(tilesStateUpdate)
+      setTiles(tilesStateUpdate)
     }
   }
 
   return (
     <>
-      <GameContext.Provider value={[fieldState, tilesState, bombClick]}>
+      <GameContext.Provider value={[fieldState, tiles, bombClick]}>
         {children}
       </GameContext.Provider>
     </>
