@@ -35,24 +35,33 @@ export function GlobalStateWrapper({ children }) {
   const LEFT_TILES = findEdgesHelper(0, fieldState.columns)
   const RIGHT_TILES = findEdgesHelper(fieldState.rows - 1, fieldState.columns)
 
-  function isTileInTopRow(i) {
+  function edges(i) {
+    let returnObj = {}
     if (i >= 1 && i <= fieldState.columns) {
-      return true
-    } else return false
-  }
+      returnObj.top = true
+    } else {
+      returnObj.top = false
+    }
 
-  function isTileInBottomRow(i) {
     if (i > fieldState.total - 1 - fieldState.columns) {
-      return true
-    } else return false
-  }
+      returnObj.bottom = true
+    } else {
+      returnObj.bottom = false
+    }
 
-  function isTileInLeftColumn(i) {
-    return LEFT_TILES.find((el) => el === i) ? true : false
-  }
+    if (LEFT_TILES.find((el) => el === i)) {
+      returnObj.left = true
+    } else {
+      returnObj.left = false
+    }
 
-  function isTileInRightColumn(i) {
-    return RIGHT_TILES.find((el) => el === i) ? true : false
+    if (RIGHT_TILES.find((el) => el === i)) {
+      returnObj.right = true
+    } else {
+      returnObj.right = false
+    }
+
+    return returnObj
   }
 
   // tile state
@@ -60,12 +69,7 @@ export function GlobalStateWrapper({ children }) {
     TestData[0].test.map((el, i) => {
       return {
         bomb: el,
-        edge: {
-          top: isTileInTopRow(i),
-          bottom: isTileInBottomRow(i),
-          left: isTileInLeftColumn(i),
-          right: isTileInRightColumn(i),
-        },
+        edge: edges(),
         hidden: true,
         id: i,
         text: null,
