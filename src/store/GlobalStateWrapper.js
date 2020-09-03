@@ -5,7 +5,7 @@ export const GameContext = React.createContext()
 
 export function GlobalStateWrapper({ children }) {
   // field state
-  const [fieldState, setFieldState] = useState({
+  const [field, setFieldState] = useState({
     alive: true,
     columns: 4,
     rows: 4,
@@ -13,37 +13,34 @@ export function GlobalStateWrapper({ children }) {
   })
 
   // css variables for grid layout
-  document.documentElement.style.setProperty(
-    '--global-columns',
-    fieldState.columns
-  )
-  document.documentElement.style.setProperty('--global-rows', fieldState.rows)
+  document.documentElement.style.setProperty('--global-columns', field.columns)
+  document.documentElement.style.setProperty('--global-rows', field.rows)
 
   // helper for determining whether game tiles are on left or right
   // we assign these once instead of running the loop for each tile
   function findEdgesHelper(i, step) {
     let edges = []
 
-    while (i <= fieldState.total - 1) {
+    while (i <= field.total - 1) {
       edges.push(i)
       i = i + step
     }
 
     return edges
   }
-  const LEFT_TILES = findEdgesHelper(0, fieldState.columns)
-  const RIGHT_TILES = findEdgesHelper(fieldState.rows - 1, fieldState.columns)
+  const LEFT_TILES = findEdgesHelper(0, field.columns)
+  const RIGHT_TILES = findEdgesHelper(field.rows - 1, field.columns)
 
   // sets the edge keys for the tiles state
   function edges(i) {
     let returnObj = {}
-    if (i >= 1 && i <= fieldState.columns) {
+    if (i >= 1 && i <= field.columns) {
       returnObj.top = true
     } else {
       returnObj.top = false
     }
 
-    if (i > fieldState.total - 1 - fieldState.columns) {
+    if (i > field.total - 1 - field.columns) {
       returnObj.bottom = true
     } else {
       returnObj.bottom = false
@@ -86,72 +83,72 @@ export function GlobalStateWrapper({ children }) {
       if (tiles[i].edge.left) {
         neighborTiles = [
           tiles[i + 1].bomb, // r
-          tiles[i + fieldState.rows + 1].bomb, // br
-          tiles[i + fieldState.rows].bomb, // b
+          tiles[i + field.rows + 1].bomb, // br
+          tiles[i + field.rows].bomb, // b
         ]
       } else if (tiles[i].edge.right) {
         neighborTiles = [
           tiles[i - 1].bomb, // l
-          tiles[i + fieldState.rows - 1].bomb, // bl
-          tiles[i + fieldState.rows].bomb, // b
+          tiles[i + field.rows - 1].bomb, // bl
+          tiles[i + field.rows].bomb, // b
         ]
       } else {
         neighborTiles = [
           tiles[i - 1].bomb, // l
           tiles[i + 1].bomb, // r
-          tiles[i + fieldState.rows - 1].bomb, // bl
-          tiles[i + fieldState.rows].bomb, // b
-          tiles[i + fieldState.rows + 1].bomb, // br
+          tiles[i + field.rows - 1].bomb, // bl
+          tiles[i + field.rows].bomb, // b
+          tiles[i + field.rows + 1].bomb, // br
         ]
       }
     } else if (tiles[i].edge.bottom) {
       if (tiles[i].edge.left) {
         neighborTiles = [
-          tiles[i - fieldState.rows].bomb, // t
-          tiles[i - fieldState.rows - 1].bomb, // tr
+          tiles[i - field.rows].bomb, // t
+          tiles[i - field.rows - 1].bomb, // tr
           tiles[i + 1].bomb, // r
         ]
       } else if (tiles[i].edge.right) {
         neighborTiles = [
-          tiles[i - fieldState.rows - 1].bomb, // tl
-          tiles[i - fieldState.rows].bomb, // t
+          tiles[i - field.rows - 1].bomb, // tl
+          tiles[i - field.rows].bomb, // t
           tiles[i - 1].bomb, // l
         ]
       } else {
         neighborTiles = [
-          tiles[i - fieldState.rows - 1].bomb, // tl
-          tiles[i - fieldState.rows].bomb, // t
-          tiles[i - fieldState.rows - 1].bomb, // tr
+          tiles[i - field.rows - 1].bomb, // tl
+          tiles[i - field.rows].bomb, // t
+          tiles[i - field.rows - 1].bomb, // tr
           tiles[i - 1].bomb, // l
           tiles[i + 1].bomb, // r
         ]
       }
     } else if (tiles[i].edge.left) {
       neighborTiles = [
-        tiles[i - fieldState.rows].bomb, // t
-        tiles[i - fieldState.rows - 1].bomb, // tr
+        tiles[i - field.rows].bomb, // t
+        tiles[i - field.rows - 1].bomb, // tr
         tiles[i + 1].bomb, // r
-        tiles[i + fieldState.rows + 1].bomb, // br
-        tiles[i + fieldState.rows].bomb, // b
+        tiles[i + field.rows + 1].bomb, // br
+        tiles[i + field.rows].bomb, // b
       ]
     } else if (tiles[i].edge.right) {
       neighborTiles = [
-        tiles[i - fieldState.rows].bomb, // t
-        tiles[i - fieldState.rows - 1].bomb, // tl
+        tiles[i - field.rows].bomb, // t
+        tiles[i - field.rows - 1].bomb, // tl
         tiles[i - 1].bomb, // l
-        tiles[i + fieldState.rows - 1].bomb, // bl
-        tiles[i + fieldState.rows].bomb, // b
+        tiles[i + field.rows - 1].bomb, // bl
+        tiles[i + field.rows].bomb, // b
       ]
     } else {
       neighborTiles = [
-        tiles[i - fieldState.rows - 1].bomb, // tl
-        tiles[i - fieldState.rows].bomb, // t
-        tiles[i - fieldState.rows - 1].bomb, // tr
+        tiles[i - field.rows - 1].bomb, // tl
+        tiles[i - field.rows].bomb, // t
+        tiles[i - field.rows - 1].bomb, // tr
         tiles[i - 1].bomb, // l
         tiles[i + 1].bomb, // r
-        tiles[i + fieldState.rows - 1].bomb, // bl
-        tiles[i + fieldState.rows].bomb, // b
-        tiles[i + fieldState.rows + 1].bomb, // br
+        tiles[i + field.rows - 1].bomb, // bl
+        tiles[i + field.rows].bomb, // b
+        tiles[i + field.rows + 1].bomb, // br
       ]
     }
 
@@ -161,14 +158,14 @@ export function GlobalStateWrapper({ children }) {
   }
 
   // click tile
-  const bombClick = (e) => {
+  const tileClick = (e) => {
     const i = parseInt(e.currentTarget.dataset.index)
     let tilesStateUpdate = [...tiles]
 
     if (tiles[i].bomb) {
       // is bomb
       // update field to not alive
-      let fieldStateUpdate = fieldState
+      let fieldStateUpdate = field
       fieldStateUpdate.alive = false
       setFieldState(fieldStateUpdate)
 
@@ -193,7 +190,7 @@ export function GlobalStateWrapper({ children }) {
 
   return (
     <>
-      <GameContext.Provider value={[fieldState, tiles, bombClick]}>
+      <GameContext.Provider value={[field, tiles, tileClick]}>
         {children}
       </GameContext.Provider>
     </>
