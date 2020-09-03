@@ -5,25 +5,25 @@ export const GameContext = React.createContext()
 
 export function GlobalStateWrapper({ children }) {
   // field state
-  const [fieldContext, setFieldContext] = useState({
+  const [fieldState, setFieldState] = useState({
     alive: true,
     columns: 4,
     rows: 4,
-    total: TestData.length,
+    total: TestData[0].test.length,
   })
 
   // add css variables to help with css layout
   document.documentElement.style.setProperty(
     '--global-columns',
-    fieldContext.columns
+    fieldState.columns
   )
-  document.documentElement.style.setProperty('--global-rows', fieldContext.rows)
+  document.documentElement.style.setProperty('--global-rows', fieldState.rows)
 
-  // edges
+  // is tile on edge?
   function findEdgesHelper(i, step) {
     let edges = []
 
-    while (i <= fieldContext.total) {
+    while (i <= fieldState.total - 1) {
       edges.push(i)
       i = i + step
     }
@@ -31,69 +31,166 @@ export function GlobalStateWrapper({ children }) {
     return edges
   }
 
-  // is tile on edge?
-  const LEFT_TILES = findEdgesHelper(1, fieldContext.columns)
-  const RIGHT_TILES = findEdgesHelper(fieldContext.rows, fieldContext.columns)
+  // we assign these once instead of running the loop for each tile
+  const LEFT_TILES = findEdgesHelper(0, fieldState.columns)
+  const RIGHT_TILES = findEdgesHelper(fieldState.rows - 1, fieldState.columns)
 
-  function isTileInTopRow(index) {
-    if (index >= 1 && index <= fieldContext.columns) {
+  function isTileInTopRow(i) {
+    if (i >= 1 && i <= fieldState.columns) {
       return true
     } else return false
   }
 
-  function isTileInBottomRow(index) {
-    if (index > fieldContext.total - fieldContext.columns) {
+  function isTileInBottomRow(i) {
+    if (i > fieldState.total - 1 - fieldState.columns) {
       return true
     } else return false
   }
 
-  function isTileInLeftColumn(index) {
-    return LEFT_TILES.find((el) => el === index) ? true : false
+  function isTileInLeftColumn(i) {
+    return LEFT_TILES.find((el) => el === i) ? true : false
   }
 
-  function isTileInRightColumn(index) {
-    return RIGHT_TILES.find((el) => el === index) ? true : false
+  function isTileInRightColumn(i) {
+    return RIGHT_TILES.find((el) => el === i) ? true : false
   }
 
   // tile state
-  const [tilesContext, setTilesContext] = useState(
+  const [tilesState, setTilesState] = useState(
     TestData[0].test.map((el, i) => {
       return {
         bomb: el,
         edge: {
-          top: isTileInTopRow(i + 1),
-          bottom: isTileInBottomRow(i + 1),
-          left: isTileInLeftColumn(i + 1),
-          right: isTileInRightColumn(i + 1),
+          top: isTileInTopRow(i),
+          bottom: isTileInBottomRow(i),
+          left: isTileInLeftColumn(i),
+          right: isTileInRightColumn(i),
         },
-        index: i + 1,
         hidden: true,
+        id: i,
+        text: null,
       }
     })
   )
 
+  // find neighbors
+  function neighbors(e) {
+    let i = parseInt(e.currentTarget.dataset.index) + 1
+    let neighborTiles = []
+
+    // bombs
+    if (tilesState[i].edge.top) {
+      if (tilesState[i].edge.left) {
+        neighborTiles = [
+          tilesState[i + 1].bomb, // r
+          tilesState[i + fieldState.rows + 1].bomb, // br
+          tilesState[i + fieldState.rows].bomb, // b
+        ]
+      } else if (tilesState[i].edge.right) {
+        neighborTiles = [
+          tilesState[i - 1].bomb, // l
+          tilesState[i + fieldState.rows - 1].bomb, // bl
+          tilesState[i + fieldState.rows].bomb, // b
+        ]
+      } else {
+        neighborTiles = [
+          tilesState[i - 1].bomb, // l
+          tilesState[i + 1].bomb, // r
+          tilesState[i + fieldState.rows - 1].bomb, // bl
+          tilesState[i + fieldState.rows].bomb, // b
+          tilesState[i + fieldState.rows + 1].bomb, // br
+        ]
+      }
+    } else if (tilesState[i].edge.bottom) {
+      if (tilesState[i].edge.left) {
+        neighborTiles = [
+          tilesState[i - fieldState.rows].bomb, // t
+          tilesState[i - fieldState.rows - 1].bomb, // tr
+          tilesState[i + 1].bomb, // r
+        ]
+      } else if (tilesState[i].edge.right) {
+        neighborTiles = [
+          tilesState[i - fieldState.rows - 1].bomb, // tl
+          tilesState[i - fieldState.rows].bomb, // t
+          tilesState[i - 1].bomb, // l
+        ]
+      } else {
+        neighborTiles = [
+          tilesState[i - fieldState.rows - 1].bomb, // tl
+          tilesState[i - fieldState.rows].bomb, // t
+          tilesState[i - fieldState.rows - 1].bomb, // tr
+          tilesState[i - 1].bomb, // l
+          tilesState[i + 1].bomb, // r
+        ]
+      }
+    } else if (tilesState[i].edge.left) {
+      neighborTiles = [
+        tilesState[i - fieldState.rows].bomb, // t
+        tilesState[i - fieldState.rows - 1].bomb, // tr
+        tilesState[i + 1].bomb, // r
+        tilesState[i + fieldState.rows + 1].bomb, // br
+        tilesState[i + fieldState.rows].bomb, // b
+      ]
+    } else if (tilesState[i].edge.right) {
+      neighborTiles = [
+        tilesState[i - fieldState.rows].bomb, // t
+        tilesState[i - fieldState.rows - 1].bomb, // tl
+        tilesState[i - 1].bomb, // l
+        tilesState[i + fieldState.rows - 1].bomb, // bl
+        tilesState[i + fieldState.rows].bomb, // b
+      ]
+    } else {
+      neighborTiles = [
+        tilesState[i - fieldState.rows - 1].bomb, // tl
+        tilesState[i - fieldState.rows].bomb, // t
+        tilesState[i - fieldState.rows - 1].bomb, // tr
+        tilesState[i - 1].bomb, // l
+        tilesState[i + 1].bomb, // r
+        tilesState[i + fieldState.rows - 1].bomb, // bl
+        tilesState[i + fieldState.rows].bomb, // b
+        tilesState[i + fieldState.rows + 1].bomb, // br
+      ]
+    }
+
+    const neighborBombs = neighborTiles.filter((el) => el)
+
+    return neighborBombs.length
+  }
+
   // click tile
   const bombClick = (e) => {
-    const index = parseInt(e.currentTarget.dataset.index)
-    let newTilesContext = [...tilesContext]
-    let newFieldContext = { ...fieldContext }
+    const i = parseInt(e.currentTarget.dataset.index)
+    let tilesStateUpdate = [...tilesState]
 
-    // unhide tile
-    let newHidden = tilesContext[index]
-    newHidden.hidden = false
-    newTilesContext[index] = newHidden
-    setTilesContext(newTilesContext)
+    if (tilesState[i].bomb) {
+      // is bomb
+      // update field to not alive
+      let fieldStateUpdate = fieldState
+      fieldStateUpdate.alive = false
+      setFieldState(fieldStateUpdate)
 
-    // is bomb? update field setup
-    if (newTilesContext[index].bomb) {
-      newFieldContext.alive = false
-      setFieldContext(newFieldContext)
+      // unhide all tiles and reveal bombs
+      tilesStateUpdate = tilesStateUpdate.map((el) => {
+        let newStateObj = el
+        newStateObj.hidden = false
+        newStateObj.text = newStateObj.bomb ? '!' : ''
+        return newStateObj
+      })
+      setTilesState(tilesStateUpdate)
+    } else {
+      // wasn't bomb
+      // unhide tile and update text to neighbor bombs
+      let clickedTile = tilesState[i]
+      clickedTile.hidden = false
+      clickedTile.text = neighbors(e)
+      tilesStateUpdate[i] = clickedTile
+      setTilesState(tilesStateUpdate)
     }
   }
 
   return (
     <>
-      <GameContext.Provider value={[fieldContext, tilesContext, bombClick]}>
+      <GameContext.Provider value={[fieldState, tilesState, bombClick]}>
         {children}
       </GameContext.Provider>
     </>
