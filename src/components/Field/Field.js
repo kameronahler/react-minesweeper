@@ -13,7 +13,7 @@ export default function Field() {
   return (
     <div className='field'>
       {tiles.map((el, index) => {
-        return <Tile key={index} dataIndex={index} text={el.text} />
+        return <Tile key={index} index={index} text={el.text} />
       })}
       {!field.alive ? <p>Game Over</p> : ''}
     </div>
