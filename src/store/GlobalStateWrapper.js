@@ -4,7 +4,7 @@ import TestData from './test.json'
 export const GameContext = React.createContext()
 
 export function GlobalStateWrapper({ children }) {
-  // field state
+  // STATE FIELD
   const [field, setFieldState] = useState({
     alive: true,
     columns: 4,
@@ -61,7 +61,7 @@ export function GlobalStateWrapper({ children }) {
     return returnObj
   }
 
-  // tiles state
+  // STATE TILES
   const [tiles, setTiles] = useState(
     TestData[0].test.map((el, i) => {
       return {
@@ -78,93 +78,104 @@ export function GlobalStateWrapper({ children }) {
     let i = parseInt(e.currentTarget.dataset.index)
     let neighborTiles = []
 
-    // bombs
+    // check for bombs
     if (tiles[i].edge.top) {
+      // top first
       if (tiles[i].edge.left) {
+        // top left
         neighborTiles = [
-          tiles[i + 1].bomb, // r
-          tiles[i + field.rows + 1].bomb, // br
-          tiles[i + field.rows].bomb, // b
+          tiles[i + 1].bomb,
+          tiles[i + field.rows + 1].bomb,
+          tiles[i + field.rows].bomb,
         ]
       } else if (tiles[i].edge.right) {
+        // top right
         neighborTiles = [
-          tiles[i - 1].bomb, // l
-          tiles[i + field.rows - 1].bomb, // bl
-          tiles[i + field.rows].bomb, // b
+          tiles[i - 1].bomb,
+          tiles[i + field.rows - 1].bomb,
+          tiles[i + field.rows].bomb,
         ]
       } else {
+        // all other top
         neighborTiles = [
-          tiles[i - 1].bomb, // l
-          tiles[i + 1].bomb, // r
-          tiles[i + field.rows - 1].bomb, // bl
-          tiles[i + field.rows].bomb, // b
-          tiles[i + field.rows + 1].bomb, // br
+          tiles[i - 1].bomb,
+          tiles[i + 1].bomb,
+          tiles[i + field.rows - 1].bomb,
+          tiles[i + field.rows].bomb,
+          tiles[i + field.rows + 1].bomb,
         ]
       }
     } else if (tiles[i].edge.bottom) {
+      // bottom
       if (tiles[i].edge.left) {
+        // bottom left
         neighborTiles = [
-          tiles[i - field.rows].bomb, // t
-          tiles[i - field.rows - 1].bomb, // tr
-          tiles[i + 1].bomb, // r
+          tiles[i - field.rows].bomb,
+          tiles[i - field.rows - 1].bomb,
+          tiles[i + 1].bomb,
         ]
       } else if (tiles[i].edge.right) {
+        // bottom right
         neighborTiles = [
-          tiles[i - field.rows - 1].bomb, // tl
-          tiles[i - field.rows].bomb, // t
-          tiles[i - 1].bomb, // l
+          tiles[i - field.rows - 1].bomb,
+          tiles[i - field.rows].bomb,
+          tiles[i - 1].bomb,
         ]
       } else {
+        // all other bottom
         neighborTiles = [
-          tiles[i - field.rows - 1].bomb, // tl
-          tiles[i - field.rows].bomb, // t
-          tiles[i - field.rows - 1].bomb, // tr
-          tiles[i - 1].bomb, // l
-          tiles[i + 1].bomb, // r
+          tiles[i - field.rows - 1].bomb,
+          tiles[i - field.rows].bomb,
+          tiles[i - field.rows - 1].bomb,
+          tiles[i - 1].bomb,
+          tiles[i + 1].bomb,
         ]
       }
     } else if (tiles[i].edge.left) {
+      // left side (not top or bottom)
       neighborTiles = [
-        tiles[i - field.rows].bomb, // t
-        tiles[i - field.rows - 1].bomb, // tr
-        tiles[i + 1].bomb, // r
-        tiles[i + field.rows + 1].bomb, // br
-        tiles[i + field.rows].bomb, // b
+        tiles[i - field.rows].bomb,
+        tiles[i - field.rows - 1].bomb,
+        tiles[i + 1].bomb,
+        tiles[i + field.rows + 1].bomb,
+        tiles[i + field.rows].bomb,
       ]
     } else if (tiles[i].edge.right) {
+      // right side (not top or bottom)
       neighborTiles = [
-        tiles[i - field.rows].bomb, // t
-        tiles[i - field.rows - 1].bomb, // tl
-        tiles[i - 1].bomb, // l
-        tiles[i + field.rows - 1].bomb, // bl
-        tiles[i + field.rows].bomb, // b
+        tiles[i - field.rows].bomb,
+        tiles[i - field.rows - 1].bomb,
+        tiles[i - 1].bomb,
+        tiles[i + field.rows - 1].bomb,
+        tiles[i + field.rows].bomb,
       ]
     } else {
+      // everything else
       neighborTiles = [
-        tiles[i - field.rows - 1].bomb, // tl
-        tiles[i - field.rows].bomb, // t
-        tiles[i - field.rows - 1].bomb, // tr
-        tiles[i - 1].bomb, // l
-        tiles[i + 1].bomb, // r
-        tiles[i + field.rows - 1].bomb, // bl
-        tiles[i + field.rows].bomb, // b
-        tiles[i + field.rows + 1].bomb, // br
+        tiles[i - field.rows - 1].bomb,
+        tiles[i - field.rows].bomb,
+        tiles[i - field.rows - 1].bomb,
+        tiles[i - 1].bomb,
+        tiles[i + 1].bomb,
+        tiles[i + field.rows - 1].bomb,
+        tiles[i + field.rows].bomb,
+        tiles[i + field.rows + 1].bomb,
       ]
     }
 
-    const neighborBombs = neighborTiles.filter((el) => el)
+    const ONLY_BOMBS = neighborTiles.filter((el) => el)
 
-    return neighborBombs.length
+    return ONLY_BOMBS.length
   }
 
   // click tile
-  const tileClick = (e) => {
+  function tileClick(e) {
     const i = parseInt(e.currentTarget.dataset.index)
     let tilesStateUpdate = [...tiles]
 
     if (tiles[i].bomb) {
       // is bomb
-      // update field to not alive
+      // update field to dead
       let fieldStateUpdate = field
       fieldStateUpdate.alive = false
       setFieldState(fieldStateUpdate)
