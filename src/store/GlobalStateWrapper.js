@@ -1,50 +1,42 @@
 import React, { useState, useEffect } from 'react'
-import TestData from './test.json'
 
 export const GameContext = React.createContext()
 
 export function GlobalStateWrapper({ children }) {
   // STATE FIELD
-  const initialGameStatus = {
-    alive: null,
-    columns: 4,
-    rows: 4,
-  }
-
-  const [gameStatus, setGameStatus] = useState(initialGameStatus)
+  const [columns, setColumns] = useState(null)
+  const [rows, setRows] = useState(null)
+  const [gameStatus, setGameStatus] = useState(null)
 
   // css variables for grid layout
-  document.documentElement.style.setProperty(
-    '--global-columns',
-    gameStatus.columns
-  )
-  document.documentElement.style.setProperty('--global-rows', gameStatus.rows)
+  document.documentElement.style.setProperty('--global-columns', columns)
+  document.documentElement.style.setProperty('--global-rows', rows)
 
   // helper for determining whether game tiles are on left or right
   // we assign these once instead of running the loop for each tile
   function findEdgesHelper(i, step) {
     let edges = []
 
-    while (i <= gameStatus.rows * gameStatus.columns - 1) {
+    while (i <= rows * columns - 1) {
       edges.push(i)
       i = i + step
     }
 
     return edges
   }
-  const LEFT_TILES = findEdgesHelper(0, gameStatus.columns)
-  const RIGHT_TILES = findEdgesHelper(gameStatus.rows - 1, gameStatus.columns)
+  const LEFT_TILES = gameStatus ? findEdgesHelper(0, columns) : null
+  const RIGHT_TILES = gameStatus ? findEdgesHelper(rows - 1, columns) : null
 
   // sets the edge keys for the tiles state
   function edges(i) {
     let returnObj = {}
-    if (i >= 1 && i <= gameStatus.columns) {
+    if (i >= 1 && i <= columns) {
       returnObj.top = true
     } else {
       returnObj.top = false
     }
 
-    if (i > gameStatus.rows * gameStatus.columns - 1 - gameStatus.columns) {
+    if (i > rows * columns - 1 - columns) {
       returnObj.bottom = true
     } else {
       returnObj.bottom = false
@@ -66,11 +58,28 @@ export function GlobalStateWrapper({ children }) {
   }
 
   // STATE TILES
-  const randomTileArr = () => {
+  const [tiles, setTiles] = useState([])
+
+  // click start or restart
+  function generateTiles(e, rows, columns) {
+    e.preventDefault()
+    setRows(rows)
+    setColumns(columns)
+    setGameStatus(true)
+  }
+
+  // build the random mines when the user presses button and updates the gameStatus
+  useEffect(() => {
+    const newTiles = randomTileArr()
+    setTiles(newTiles)
+  }, [gameStatus])
+
+  function randomTileArr() {
     let arr = []
     let i = 0
-    while (i < gameStatus.rows * gameStatus.columns) {
-      const rando = Math.random()
+    while (i < rows * columns) {
+      let rando = Math.random()
+      console.log(rando)
       arr.push({
         bomb: rando < 0.5 ? true : false,
         edge: edges(i),
@@ -81,8 +90,6 @@ export function GlobalStateWrapper({ children }) {
     }
     return arr
   }
-
-  const [tiles, setTiles] = useState([])
 
   // examine neighbors on click
   function neighbors(e) {
@@ -96,24 +103,24 @@ export function GlobalStateWrapper({ children }) {
         // top left
         neighborTiles = [
           tiles[i + 1].bomb,
-          tiles[i + gameStatus.rows + 1].bomb,
-          tiles[i + gameStatus.rows].bomb,
+          tiles[i + rows + 1].bomb,
+          tiles[i + rows].bomb,
         ]
       } else if (tiles[i].edge.right) {
         // top right
         neighborTiles = [
           tiles[i - 1].bomb,
-          tiles[i + gameStatus.rows - 1].bomb,
-          tiles[i + gameStatus.rows].bomb,
+          tiles[i + rows - 1].bomb,
+          tiles[i + rows].bomb,
         ]
       } else {
         // all other top
         neighborTiles = [
           tiles[i - 1].bomb,
           tiles[i + 1].bomb,
-          tiles[i + gameStatus.rows - 1].bomb,
-          tiles[i + gameStatus.rows].bomb,
-          tiles[i + gameStatus.rows + 1].bomb,
+          tiles[i + rows - 1].bomb,
+          tiles[i + rows].bomb,
+          tiles[i + rows + 1].bomb,
         ]
       }
     } else if (tiles[i].edge.bottom) {
@@ -121,23 +128,23 @@ export function GlobalStateWrapper({ children }) {
       if (tiles[i].edge.left) {
         // bottom left
         neighborTiles = [
-          tiles[i - gameStatus.rows].bomb,
-          tiles[i - gameStatus.rows - 1].bomb,
+          tiles[i - rows].bomb,
+          tiles[i - rows - 1].bomb,
           tiles[i + 1].bomb,
         ]
       } else if (tiles[i].edge.right) {
         // bottom right
         neighborTiles = [
-          tiles[i - gameStatus.rows - 1].bomb,
-          tiles[i - gameStatus.rows].bomb,
+          tiles[i - rows - 1].bomb,
+          tiles[i - rows].bomb,
           tiles[i - 1].bomb,
         ]
       } else {
         // all other bottom
         neighborTiles = [
-          tiles[i - gameStatus.rows - 1].bomb,
-          tiles[i - gameStatus.rows].bomb,
-          tiles[i - gameStatus.rows - 1].bomb,
+          tiles[i - rows - 1].bomb,
+          tiles[i - rows].bomb,
+          tiles[i - rows - 1].bomb,
           tiles[i - 1].bomb,
           tiles[i + 1].bomb,
         ]
@@ -145,32 +152,32 @@ export function GlobalStateWrapper({ children }) {
     } else if (tiles[i].edge.left) {
       // left side (not top or bottom)
       neighborTiles = [
-        tiles[i - gameStatus.rows].bomb,
-        tiles[i - gameStatus.rows - 1].bomb,
+        tiles[i - rows].bomb,
+        tiles[i - rows - 1].bomb,
         tiles[i + 1].bomb,
-        tiles[i + gameStatus.rows + 1].bomb,
-        tiles[i + gameStatus.rows].bomb,
+        tiles[i + rows + 1].bomb,
+        tiles[i + rows].bomb,
       ]
     } else if (tiles[i].edge.right) {
       // right side (not top or bottom)
       neighborTiles = [
-        tiles[i - gameStatus.rows].bomb,
-        tiles[i - gameStatus.rows - 1].bomb,
+        tiles[i - rows].bomb,
+        tiles[i - rows - 1].bomb,
         tiles[i - 1].bomb,
-        tiles[i + gameStatus.rows - 1].bomb,
-        tiles[i + gameStatus.rows].bomb,
+        tiles[i + rows - 1].bomb,
+        tiles[i + rows].bomb,
       ]
     } else {
       // everything else
       neighborTiles = [
-        tiles[i - gameStatus.rows - 1].bomb,
-        tiles[i - gameStatus.rows].bomb,
-        tiles[i - gameStatus.rows - 1].bomb,
+        tiles[i - rows - 1].bomb,
+        tiles[i - rows].bomb,
+        tiles[i - rows - 1].bomb,
         tiles[i - 1].bomb,
         tiles[i + 1].bomb,
-        tiles[i + gameStatus.rows - 1].bomb,
-        tiles[i + gameStatus.rows].bomb,
-        tiles[i + gameStatus.rows + 1].bomb,
+        tiles[i + rows - 1].bomb,
+        tiles[i + rows].bomb,
+        tiles[i + rows + 1].bomb,
       ]
     }
 
@@ -187,9 +194,7 @@ export function GlobalStateWrapper({ children }) {
     if (tiles[i].bomb) {
       // is bomb
       // update game to dead
-      let gameStatusUpdate = gameStatus
-      gameStatusUpdate.alive = false
-      setGameStatus(gameStatusUpdate)
+      setGameStatus(false)
 
       // unhide all tiles and reveal bombs
       tilesStateUpdate = tilesStateUpdate.map((el) => {
@@ -208,12 +213,6 @@ export function GlobalStateWrapper({ children }) {
       tilesStateUpdate[i] = clickedTile
       setTiles(tilesStateUpdate)
     }
-  }
-
-  // click start or restart
-  function generateTiles() {
-    setGameStatus({ ...gameStatus, alive: true })
-    setTiles(randomTileArr)
   }
 
   return (
