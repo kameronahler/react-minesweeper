@@ -1,15 +1,22 @@
 import React, { useState, useContext } from 'react'
 import { GameContext } from '../../store/GlobalStateWrapper'
 
-export default function GenerateTilesButton() {
-  const [gameStatus, , , generateTiles] = useContext(GameContext)
-  const [rows, setRows] = useState(4)
-  const [columns, setColumns] = useState(4)
+export default function NewGameButton() {
+  const [
+    alive,
+    ,
+    ,
+    newGame,
+    rows,
+    columns,
+    updateRows,
+    updateColumns,
+  ] = useContext(GameContext)
 
   return (
     <form
       onSubmit={(e) => {
-        generateTiles(e, rows, columns)
+        newGame(e, rows, columns)
       }}
     >
       <label htmlFor='row-count'>Rows</label>
@@ -17,7 +24,7 @@ export default function GenerateTilesButton() {
         id='row-count'
         type='number'
         onChange={(e) => {
-          setRows(e.currentTarget.value)
+          updateRows(e)
         }}
         defaultValue={rows}
       />
@@ -26,11 +33,11 @@ export default function GenerateTilesButton() {
         id='column-count'
         type='number'
         onChange={(e) => {
-          setColumns(e.currentTarget.value)
+          updateColumns(e)
         }}
         defaultValue={columns}
       />
-      <input type='submit' value={gameStatus === null ? 'Start' : 'Restart'} />
+      <input type='submit' value={alive === null ? 'Start' : 'New Game'} />
     </form>
   )
 }

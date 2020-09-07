@@ -1,16 +1,14 @@
 import React from 'react'
 import { GlobalStateWrapper } from '../../store/GlobalStateWrapper'
-
-// components
 import Header from '../Header/Header'
-import GenerateTilesButton from '../GenerateTilesButton/GenerateTilesButton'
+import NewGameButton from '../NewGameButton/NewGameButton'
 import Field from '../Field/Field'
 
 export default function App() {
   return (
     <GlobalStateWrapper>
       <Header />
-      <GenerateTilesButton />
+      <NewGameButton />
       <Field />
     </GlobalStateWrapper>
   )

@@ -3,31 +3,20 @@ import React, { useState, useEffect } from 'react'
 export const GameContext = React.createContext()
 
 export function GlobalStateWrapper({ children }) {
-  // STATE FIELD
-  const [columns, setColumns] = useState(null)
-  const [rows, setRows] = useState(null)
-  const [gameStatus, setGameStatus] = useState(null)
+  // STATE
+  const [columns, setColumns] = useState(4)
+  const [rows, setRows] = useState(4)
+  const [alive, setAlive] = useState(null)
+  const [tiles, setTiles] = useState([])
 
-  // css variables for grid layout
+  // STATE STYLE
   document.documentElement.style.setProperty('--global-columns', columns)
   document.documentElement.style.setProperty('--global-rows', rows)
 
-  // helper for determining whether game tiles are on left or right
-  // we assign these once instead of running the loop for each tile
-  function findEdgesHelper(i, step) {
-    let edges = []
+  // GENERATE TILES AND CALCULATE EDGES
+  const LEFT_TILES = findEdgesHelper(0, columns)
+  const RIGHT_TILES = findEdgesHelper(rows - 1, columns)
 
-    while (i <= rows * columns - 1) {
-      edges.push(i)
-      i = i + step
-    }
-
-    return edges
-  }
-  const LEFT_TILES = gameStatus ? findEdgesHelper(0, columns) : null
-  const RIGHT_TILES = gameStatus ? findEdgesHelper(rows - 1, columns) : null
-
-  // sets the edge keys for the tiles state
   function edges(i) {
     let returnObj = {}
     if (i >= 1 && i <= columns) {
@@ -57,32 +46,41 @@ export function GlobalStateWrapper({ children }) {
     return returnObj
   }
 
-  // STATE TILES
-  const [tiles, setTiles] = useState([])
+  function findEdgesHelper(i, step) {
+    let edges = []
 
-  // click start or restart
-  function generateTiles(e, rows, columns) {
-    e.preventDefault()
-    setRows(rows)
-    setColumns(columns)
-    setGameStatus(true)
+    while (i <= rows * columns - 1) {
+      edges.push(i)
+      i = i + step
+    }
+
+    return edges
   }
 
-  // build the random mines when the user presses button and updates the gameStatus
-  useEffect(() => {
+  // ROWS AND COLUMN CHANGES
+  function updateRows(e) {
+    setRows(parseInt(e.currentTarget.value))
+  }
+  function updateColumns(e) {
+    setColumns(parseInt(e.currentTarget.value))
+  }
+
+  // NEW GAME
+  function newGame(e, rows, columns) {
+    e.preventDefault()
     const newTiles = randomTileArr()
     setTiles(newTiles)
-  }, [gameStatus])
+    setAlive(true)
+  }
 
   function randomTileArr() {
     let arr = []
     let i = 0
     while (i < rows * columns) {
       let rando = Math.random()
-      console.log(rando)
       arr.push({
         bomb: rando < 0.5 ? true : false,
-        edge: edges(i),
+        edge: edges(i, rows, columns),
         hidden: true,
         text: null,
       })
@@ -91,7 +89,35 @@ export function GlobalStateWrapper({ children }) {
     return arr
   }
 
-  // examine neighbors on click
+  // CLICK TILES
+  function tileClick(e) {
+    const i = parseInt(e.currentTarget.dataset.index)
+    let tilesStateUpdate = [...tiles]
+
+    if (tiles[i].bomb) {
+      // is bomb
+      // update game to dead
+      setAlive(false)
+
+      // unhide all tiles and reveal bombs
+      tilesStateUpdate = tilesStateUpdate.map((el) => {
+        let newStateObj = el
+        newStateObj.hidden = false
+        newStateObj.text = newStateObj.bomb ? '!' : ''
+        return newStateObj
+      })
+      setTiles(tilesStateUpdate)
+    } else {
+      // wasn't bomb
+      // unhide tile and update text to neighbor bombs
+      let clickedTile = tiles[i]
+      clickedTile.hidden = false
+      clickedTile.text = neighbors(e)
+      tilesStateUpdate[i] = clickedTile
+      setTiles(tilesStateUpdate)
+    }
+  }
+
   function neighbors(e) {
     let i = parseInt(e.currentTarget.dataset.index)
     let neighborTiles = []
@@ -186,39 +212,19 @@ export function GlobalStateWrapper({ children }) {
     return ONLY_BOMBS.length
   }
 
-  // click tile
-  function tileClick(e) {
-    const i = parseInt(e.currentTarget.dataset.index)
-    let tilesStateUpdate = [...tiles]
-
-    if (tiles[i].bomb) {
-      // is bomb
-      // update game to dead
-      setGameStatus(false)
-
-      // unhide all tiles and reveal bombs
-      tilesStateUpdate = tilesStateUpdate.map((el) => {
-        let newStateObj = el
-        newStateObj.hidden = false
-        newStateObj.text = newStateObj.bomb ? '!' : ''
-        return newStateObj
-      })
-      setTiles(tilesStateUpdate)
-    } else {
-      // wasn't bomb
-      // unhide tile and update text to neighbor bombs
-      let clickedTile = tiles[i]
-      clickedTile.hidden = false
-      clickedTile.text = neighbors(e)
-      tilesStateUpdate[i] = clickedTile
-      setTiles(tilesStateUpdate)
-    }
-  }
-
   return (
     <>
       <GameContext.Provider
-        value={[gameStatus, tiles, tileClick, generateTiles]}
+        value={[
+          alive,
+          tiles,
+          tileClick,
+          newGame,
+          rows,
+          columns,
+          updateRows,
+          updateColumns,
+        ]}
       >
         {children}
       </GameContext.Provider>
