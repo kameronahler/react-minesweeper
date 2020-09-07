@@ -3,17 +3,15 @@ import { GlobalStateWrapper } from '../../store/GlobalStateWrapper'
 
 // components
 import Header from '../Header/Header'
+import GenerateTilesButton from '../GenerateTilesButton/GenerateTilesButton'
 import Field from '../Field/Field'
-import Gameover from '../Restart/Restart'
 
 export default function App() {
   return (
-    <div>
-      <GlobalStateWrapper>
-        <Header />
-        <Gameover />
-        <Field />
-      </GlobalStateWrapper>
-    </div>
+    <GlobalStateWrapper>
+      <Header />
+      <GenerateTilesButton />
+      <Field />
+    </GlobalStateWrapper>
   )
 }

@@ -6,7 +6,7 @@ export default function Header() {
   return (
     <header>
       <h1>
-        {gameStatus.alive
+        {gameStatus.alive || gameStatus.alive === null
           ? `Let's play Minecraft`
           : 'When did you get so good at Minecraft?'}
       </h1>

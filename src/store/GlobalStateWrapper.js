@@ -6,7 +6,7 @@ export const GameContext = React.createContext()
 export function GlobalStateWrapper({ children }) {
   // STATE FIELD
   const initialGameStatus = {
-    alive: true,
+    alive: null,
     columns: 4,
     rows: 4,
   }
@@ -66,25 +66,23 @@ export function GlobalStateWrapper({ children }) {
   }
 
   // STATE TILES
-  const [tiles, setTiles] = useState([])
+  const randomTileArr = () => {
+    let arr = []
+    let i = 0
+    while (i < gameStatus.rows * gameStatus.columns) {
+      const rando = Math.random()
+      arr.push({
+        bomb: rando < 0.5 ? true : false,
+        edge: edges(i),
+        hidden: true,
+        text: null,
+      })
+      i++
+    }
+    return arr
+  }
 
-  useEffect(() => {
-    setTiles(() => {
-      let arr = []
-      let i = 0
-      while (i < gameStatus.rows * gameStatus.columns) {
-        const rando = Math.random()
-        arr.push({
-          bomb: rando < 0.5 ? true : false,
-          edge: edges(i),
-          hidden: true,
-          text: null,
-        })
-        i++
-      }
-      return arr
-    })
-  }, [gameStatus])
+  const [tiles, setTiles] = useState([])
 
   // examine neighbors on click
   function neighbors(e) {
@@ -212,15 +210,16 @@ export function GlobalStateWrapper({ children }) {
     }
   }
 
-  // click restart
-  function restartClick() {
-    setGameStatus(initialGameStatus)
+  // click start or restart
+  function generateTiles() {
+    setGameStatus({ ...gameStatus, alive: true })
+    setTiles(randomTileArr)
   }
 
   return (
     <>
       <GameContext.Provider
-        value={[gameStatus, tiles, tileClick, restartClick]}
+        value={[gameStatus, tiles, tileClick, generateTiles]}
       >
         {children}
       </GameContext.Provider>
