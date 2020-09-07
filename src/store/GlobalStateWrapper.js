@@ -203,9 +203,17 @@ export function GlobalStateWrapper({ children }) {
     }
   }
 
+  // click restart
+  function restartClick() {
+    setGameStatus(initialGameStatus)
+    setTiles(initialTiles)
+  }
+
   return (
     <>
-      <GameContext.Provider value={[gameStatus, tiles, tileClick]}>
+      <GameContext.Provider
+        value={[gameStatus, tiles, tileClick, restartClick]}
+      >
         {children}
       </GameContext.Provider>
     </>
