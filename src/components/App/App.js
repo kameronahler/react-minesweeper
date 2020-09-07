@@ -4,15 +4,15 @@ import { GlobalStateWrapper } from '../../store/GlobalStateWrapper'
 // components
 import Header from '../Header/Header'
 import Field from '../Field/Field'
-import Gameover from '../Gameover/Gameover'
+import Gameover from '../Restart/Restart'
 
 export default function App() {
   return (
     <div>
       <GlobalStateWrapper>
         <Header />
-        <Field />
         <Gameover />
+        <Field />
       </GlobalStateWrapper>
     </div>
   )
