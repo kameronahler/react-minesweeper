@@ -5,12 +5,14 @@ export const GameContext = React.createContext()
 
 export function GlobalStateWrapper({ children }) {
   // STATE FIELD
-  const [gameStatus, setGameStatus] = useState({
+  const initialGameStatus = {
     alive: true,
     columns: 4,
     rows: 4,
     total: TestData[0].test.length,
-  })
+  }
+
+  const [gameStatus, setGameStatus] = useState(initialGameStatus)
 
   // css variables for grid layout
   document.documentElement.style.setProperty(
@@ -65,16 +67,15 @@ export function GlobalStateWrapper({ children }) {
   }
 
   // STATE TILES
-  const [tiles, setTiles] = useState(
-    TestData[0].test.map((el, i) => {
-      return {
-        bomb: el,
-        edge: edges(i),
-        hidden: true,
-        text: null,
-      }
-    })
-  )
+  const initialTiles = TestData[0].test.map((el, i) => {
+    return {
+      bomb: el,
+      edge: edges(i),
+      hidden: true,
+      text: null,
+    }
+  })
+  const [tiles, setTiles] = useState(initialTiles)
 
   // examine neighbors on click
   function neighbors(e) {
