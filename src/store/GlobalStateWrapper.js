@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import TestData from './test.json'
 
 export const GameContext = React.createContext()
@@ -66,15 +66,25 @@ export function GlobalStateWrapper({ children }) {
   }
 
   // STATE TILES
-  const initialTiles = TestData[0].test.map((el, i) => {
-    return {
-      bomb: el,
-      edge: edges(i),
-      hidden: true,
-      text: null,
-    }
-  })
-  const [tiles, setTiles] = useState(initialTiles)
+  const [tiles, setTiles] = useState([])
+
+  useEffect(() => {
+    setTiles(() => {
+      let arr = []
+      let i = 0
+      while (i < gameStatus.rows * gameStatus.columns) {
+        const rando = Math.random()
+        arr.push({
+          bomb: rando < 0.5 ? true : false,
+          edge: edges(i),
+          hidden: true,
+          text: null,
+        })
+        i++
+      }
+      return arr
+    })
+  }, [gameStatus])
 
   // examine neighbors on click
   function neighbors(e) {
@@ -205,7 +215,6 @@ export function GlobalStateWrapper({ children }) {
   // click restart
   function restartClick() {
     setGameStatus(initialGameStatus)
-    setTiles(initialTiles)
   }
 
   return (
