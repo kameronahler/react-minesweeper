@@ -9,7 +9,6 @@ export function GlobalStateWrapper({ children }) {
     alive: true,
     columns: 4,
     rows: 4,
-    total: TestData[0].test.length,
   }
 
   const [gameStatus, setGameStatus] = useState(initialGameStatus)
@@ -26,7 +25,7 @@ export function GlobalStateWrapper({ children }) {
   function findEdgesHelper(i, step) {
     let edges = []
 
-    while (i <= gameStatus.total - 1) {
+    while (i <= gameStatus.rows * gameStatus.columns - 1) {
       edges.push(i)
       i = i + step
     }
@@ -45,7 +44,7 @@ export function GlobalStateWrapper({ children }) {
       returnObj.top = false
     }
 
-    if (i > gameStatus.total - 1 - gameStatus.columns) {
+    if (i > gameStatus.rows * gameStatus.columns - 1 - gameStatus.columns) {
       returnObj.bottom = true
     } else {
       returnObj.bottom = false
