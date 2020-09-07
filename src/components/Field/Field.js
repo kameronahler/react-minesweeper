@@ -8,14 +8,13 @@ import './Field.scss'
 import Tile from '../Tile/Tile'
 
 export default function Field() {
-  const [field, tiles] = useContext(GameContext)
+  const [, tiles] = useContext(GameContext)
 
   return (
     <div className='field'>
       {tiles.map((el, index) => {
         return <Tile key={index} index={index} text={el.text} />
       })}
-      {!field.alive ? <p>Game Over</p> : ''}
     </div>
   )
 }

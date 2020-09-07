@@ -4,6 +4,7 @@ import { GlobalStateWrapper } from '../../store/GlobalStateWrapper'
 // components
 import Header from '../Header/Header'
 import Field from '../Field/Field'
+import Gameover from '../Gameover/Gameover'
 
 export default function App() {
   return (
@@ -11,6 +12,7 @@ export default function App() {
       <GlobalStateWrapper>
         <Header />
         <Field />
+        <Gameover />
       </GlobalStateWrapper>
     </div>
   )
