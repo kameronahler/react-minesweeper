@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 export const GameContext = React.createContext()
 
@@ -8,10 +8,6 @@ export function GlobalStateWrapper({ children }) {
   const [rows, setRows] = useState(4)
   const [alive, setAlive] = useState(null)
   const [tiles, setTiles] = useState([])
-
-  // STATE STYLE
-  document.documentElement.style.setProperty('--global-columns', columns)
-  document.documentElement.style.setProperty('--global-rows', rows)
 
   // GENERATE FIELD (ROWS, TILES, AND BOMBS)
   function updateRows(e) {
@@ -68,6 +64,12 @@ export function GlobalStateWrapper({ children }) {
       })
       i++
     }
+
+    // anytime we create a new set of tile data (a new game),
+    // we set the css grid variables for the layout
+    document.documentElement.style.setProperty('--global-columns', columns)
+    document.documentElement.style.setProperty('--global-rows', rows)
+
     return arr
   }
 
