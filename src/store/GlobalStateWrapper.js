@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 
 export const GameContext = React.createContext()
 
@@ -13,51 +13,7 @@ export function GlobalStateWrapper({ children }) {
   document.documentElement.style.setProperty('--global-columns', columns)
   document.documentElement.style.setProperty('--global-rows', rows)
 
-  // GENERATE TILES AND CALCULATE EDGES
-  const LEFT_TILES = findEdgesHelper(0, columns)
-  const RIGHT_TILES = findEdgesHelper(rows - 1, columns)
-
-  function edges(i) {
-    let returnObj = {}
-    if (i >= 1 && i <= columns) {
-      returnObj.top = true
-    } else {
-      returnObj.top = false
-    }
-
-    if (i > rows * columns - 1 - columns) {
-      returnObj.bottom = true
-    } else {
-      returnObj.bottom = false
-    }
-
-    if (LEFT_TILES.find((el) => el === i)) {
-      returnObj.left = true
-    } else {
-      returnObj.left = false
-    }
-
-    if (RIGHT_TILES.find((el) => el === i)) {
-      returnObj.right = true
-    } else {
-      returnObj.right = false
-    }
-
-    return returnObj
-  }
-
-  function findEdgesHelper(i, step) {
-    let edges = []
-
-    while (i <= rows * columns - 1) {
-      edges.push(i)
-      i = i + step
-    }
-
-    return edges
-  }
-
-  // ROWS AND COLUMN CHANGES
+  // GENERATE FIELD (ROWS, TILES, AND BOMBS)
   function updateRows(e) {
     setRows(parseInt(e.currentTarget.value))
   }
@@ -65,22 +21,48 @@ export function GlobalStateWrapper({ children }) {
     setColumns(parseInt(e.currentTarget.value))
   }
 
-  // NEW GAME
-  function newGame(e, rows, columns) {
-    e.preventDefault()
-    const newTiles = randomTileArr()
-    setTiles(newTiles)
-    setAlive(true)
+  // CALCULATE HORIZONTAL FIELD EDGES
+  const LEFT_TILES = findFieldEdges(0, columns)
+  const RIGHT_TILES = findFieldEdges(columns - 1, columns)
+
+  function findFieldEdges(start, step) {
+    let i = start
+    let edges = []
+
+    while (i < rows * columns) {
+      edges.push(i)
+      i = i + step
+    }
+
+    return edges
   }
 
-  function randomTileArr() {
+  // NEW GAME, CHANGE STATUS, GENERATE TILE DATA
+  function newGame(e, rows, columns) {
+    e.preventDefault()
+    const newTiles = createTileData()
+    setTiles(newTiles)
+    setAlive(true)
+    console.log(newTiles)
+  }
+
+  function onEdgeCheck(i) {
+    let returnObj = {
+      top: i >= 0 && i < columns ? true : false,
+      bottom: i > rows * columns - 1 - columns ? true : false,
+      left: LEFT_TILES.includes(i),
+      right: RIGHT_TILES.includes(i),
+    }
+    return returnObj
+  }
+
+  function createTileData() {
     let arr = []
     let i = 0
     while (i < rows * columns) {
-      let rando = Math.random()
       arr.push({
-        bomb: rando < 0.5 ? true : false,
-        edge: edges(i, rows, columns),
+        bomb: Math.random() < 0.1 ? true : false,
+        edge: onEdgeCheck(i),
         hidden: true,
         text: null,
       })
@@ -95,11 +77,10 @@ export function GlobalStateWrapper({ children }) {
     let tilesStateUpdate = [...tiles]
 
     if (tiles[i].bomb) {
-      // is bomb
-      // update game to dead
+      // if bomb, update game to dead
       setAlive(false)
 
-      // unhide all tiles and reveal bombs
+      // if bomb, unhide all tiles and reveal bombs
       tilesStateUpdate = tilesStateUpdate.map((el) => {
         let newStateObj = el
         newStateObj.hidden = false
@@ -108,17 +89,16 @@ export function GlobalStateWrapper({ children }) {
       })
       setTiles(tilesStateUpdate)
     } else {
-      // wasn't bomb
-      // unhide tile and update text to neighbor bombs
+      // if not bomb unhide tile and update text to neighbor bomb total
       let clickedTile = tiles[i]
       clickedTile.hidden = false
-      clickedTile.text = neighbors(e)
+      clickedTile.text = neighborBombTotals(e)
       tilesStateUpdate[i] = clickedTile
       setTiles(tilesStateUpdate)
     }
   }
 
-  function neighbors(e) {
+  function neighborBombTotals(e) {
     let i = parseInt(e.currentTarget.dataset.index)
     let neighborTiles = []
 
@@ -128,25 +108,25 @@ export function GlobalStateWrapper({ children }) {
       if (tiles[i].edge.left) {
         // top left
         neighborTiles = [
-          tiles[i + 1].bomb,
-          tiles[i + rows + 1].bomb,
-          tiles[i + rows].bomb,
+          tiles[i + 1].bomb, // right
+          tiles[i + rows + 1].bomb, // bottom right
+          tiles[i + rows].bomb, // bottom
         ]
       } else if (tiles[i].edge.right) {
         // top right
         neighborTiles = [
-          tiles[i - 1].bomb,
-          tiles[i + rows - 1].bomb,
-          tiles[i + rows].bomb,
+          tiles[i - 1].bomb, // left
+          tiles[i + rows - 1].bomb, // bottom left
+          tiles[i + rows].bomb, // bottom
         ]
       } else {
         // all other top
         neighborTiles = [
-          tiles[i - 1].bomb,
-          tiles[i + 1].bomb,
-          tiles[i + rows - 1].bomb,
-          tiles[i + rows].bomb,
-          tiles[i + rows + 1].bomb,
+          tiles[i + 1].bomb, // right
+          tiles[i + rows + 1].bomb, // bottom right
+          tiles[i + rows].bomb, // bottom
+          tiles[i + rows - 1].bomb, // bottom left
+          tiles[i - 1].bomb, // left
         ]
       }
     } else if (tiles[i].edge.bottom) {
@@ -154,56 +134,56 @@ export function GlobalStateWrapper({ children }) {
       if (tiles[i].edge.left) {
         // bottom left
         neighborTiles = [
-          tiles[i - rows].bomb,
-          tiles[i - rows - 1].bomb,
-          tiles[i + 1].bomb,
+          tiles[i - rows].bomb, // top
+          tiles[i - rows + 1].bomb, // top right
+          tiles[i + 1].bomb, // right
         ]
       } else if (tiles[i].edge.right) {
         // bottom right
         neighborTiles = [
-          tiles[i - rows - 1].bomb,
-          tiles[i - rows].bomb,
-          tiles[i - 1].bomb,
+          tiles[i - rows].bomb, // top
+          tiles[i - rows - 1].bomb, // top left
+          tiles[i - 1].bomb, // left
         ]
       } else {
         // all other bottom
         neighborTiles = [
-          tiles[i - rows - 1].bomb,
-          tiles[i - rows].bomb,
-          tiles[i - rows - 1].bomb,
-          tiles[i - 1].bomb,
-          tiles[i + 1].bomb,
+          tiles[i - 1].bomb, // left
+          tiles[i - rows - 1].bomb, // top left
+          tiles[i - rows].bomb, // top
+          tiles[i - rows + 1].bomb, // top right
+          tiles[i + 1].bomb, // right
         ]
       }
     } else if (tiles[i].edge.left) {
       // left side (not top or bottom)
       neighborTiles = [
-        tiles[i - rows].bomb,
-        tiles[i - rows - 1].bomb,
-        tiles[i + 1].bomb,
-        tiles[i + rows + 1].bomb,
-        tiles[i + rows].bomb,
+        tiles[i - rows].bomb, // top
+        tiles[i - rows + 1].bomb, // top right
+        tiles[i + 1].bomb, // right
+        tiles[i + rows + 1].bomb, // bottom right
+        tiles[i + rows].bomb, // bottom
       ]
     } else if (tiles[i].edge.right) {
       // right side (not top or bottom)
       neighborTiles = [
-        tiles[i - rows].bomb,
-        tiles[i - rows - 1].bomb,
-        tiles[i - 1].bomb,
-        tiles[i + rows - 1].bomb,
-        tiles[i + rows].bomb,
+        tiles[i - rows].bomb, // top
+        tiles[i - rows - 1].bomb, // top left
+        tiles[i - 1].bomb, // left
+        tiles[i + rows].bomb, // bottom
+        tiles[i + rows - 1].bomb, // bottom left
       ]
     } else {
       // everything else
       neighborTiles = [
-        tiles[i - rows - 1].bomb,
-        tiles[i - rows].bomb,
-        tiles[i - rows - 1].bomb,
-        tiles[i - 1].bomb,
-        tiles[i + 1].bomb,
-        tiles[i + rows - 1].bomb,
-        tiles[i + rows].bomb,
-        tiles[i + rows + 1].bomb,
+        tiles[i - rows - 1].bomb, // top left
+        tiles[i - rows].bomb, // top
+        tiles[i - rows + 1].bomb, // top right
+        tiles[i + 1].bomb, // right
+        tiles[i + rows + 1].bomb, // bottom right
+        tiles[i + rows].bomb, // bottom
+        tiles[i + rows - 1].bomb, // bottom left
+        tiles[i - 1].bomb, // left
       ]
     }
 

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useContext } from 'react'
 import { GameContext } from '../../store/GlobalStateWrapper'
 
 export default function NewGameButton() {
