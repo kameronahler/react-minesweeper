@@ -34,7 +34,7 @@ export function GlobalStateWrapper({ children }) {
   }
 
   // NEW GAME, CHANGE STATUS, GENERATE TILE DATA
-  function newGame(e, rows, columns) {
+  function newGame(e) {
     e.preventDefault()
     const newTiles = createTileData()
     setTiles(newTiles)
