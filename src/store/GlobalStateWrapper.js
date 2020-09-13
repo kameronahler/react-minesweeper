@@ -111,23 +111,23 @@ export function GlobalStateWrapper({ children }) {
         // top left
         neighborTiles = [
           tiles[i + 1].bomb, // right
-          tiles[i + rows + 1].bomb, // bottom right
-          tiles[i + rows].bomb, // bottom
+          tiles[i + columns + 1].bomb, // bottom right
+          tiles[i + columns].bomb, // bottom
         ]
       } else if (tiles[i].edge.right) {
         // top right
         neighborTiles = [
           tiles[i - 1].bomb, // left
-          tiles[i + rows - 1].bomb, // bottom left
-          tiles[i + rows].bomb, // bottom
+          tiles[i + columns - 1].bomb, // bottom left
+          tiles[i + columns].bomb, // bottom
         ]
       } else {
         // all other top
         neighborTiles = [
           tiles[i + 1].bomb, // right
-          tiles[i + rows + 1].bomb, // bottom right
-          tiles[i + rows].bomb, // bottom
-          tiles[i + rows - 1].bomb, // bottom left
+          tiles[i + columns + 1].bomb, // bottom right
+          tiles[i + columns].bomb, // bottom
+          tiles[i + columns - 1].bomb, // bottom left
           tiles[i - 1].bomb, // left
         ]
       }
@@ -136,55 +136,55 @@ export function GlobalStateWrapper({ children }) {
       if (tiles[i].edge.left) {
         // bottom left
         neighborTiles = [
-          tiles[i - rows].bomb, // top
-          tiles[i - rows + 1].bomb, // top right
+          tiles[i - columns].bomb, // top
+          tiles[i - columns + 1].bomb, // top right
           tiles[i + 1].bomb, // right
         ]
       } else if (tiles[i].edge.right) {
         // bottom right
         neighborTiles = [
-          tiles[i - rows].bomb, // top
-          tiles[i - rows - 1].bomb, // top left
+          tiles[i - columns].bomb, // top
+          tiles[i - columns - 1].bomb, // top left
           tiles[i - 1].bomb, // left
         ]
       } else {
         // all other bottom
         neighborTiles = [
           tiles[i - 1].bomb, // left
-          tiles[i - rows - 1].bomb, // top left
-          tiles[i - rows].bomb, // top
-          tiles[i - rows + 1].bomb, // top right
+          tiles[i - columns - 1].bomb, // top left
+          tiles[i - columns].bomb, // top
+          tiles[i - columns + 1].bomb, // top right
           tiles[i + 1].bomb, // right
         ]
       }
     } else if (tiles[i].edge.left) {
       // left side (not top or bottom)
       neighborTiles = [
-        tiles[i - rows].bomb, // top
-        tiles[i - rows + 1].bomb, // top right
+        tiles[i - columns].bomb, // top
+        tiles[i - columns + 1].bomb, // top right
         tiles[i + 1].bomb, // right
-        tiles[i + rows + 1].bomb, // bottom right
-        tiles[i + rows].bomb, // bottom
+        tiles[i + columns + 1].bomb, // bottom right
+        tiles[i + columns].bomb, // bottom
       ]
     } else if (tiles[i].edge.right) {
       // right side (not top or bottom)
       neighborTiles = [
-        tiles[i - rows].bomb, // top
-        tiles[i - rows - 1].bomb, // top left
+        tiles[i - columns].bomb, // top
+        tiles[i - columns - 1].bomb, // top left
         tiles[i - 1].bomb, // left
-        tiles[i + rows].bomb, // bottom
-        tiles[i + rows - 1].bomb, // bottom left
+        tiles[i + columns].bomb, // bottom
+        tiles[i + columns - 1].bomb, // bottom left
       ]
     } else {
       // everything else
       neighborTiles = [
-        tiles[i - rows - 1].bomb, // top left
-        tiles[i - rows].bomb, // top
-        tiles[i - rows + 1].bomb, // top right
+        tiles[i - columns - 1].bomb, // top left
+        tiles[i - columns].bomb, // top
+        tiles[i - columns + 1].bomb, // top right
         tiles[i + 1].bomb, // right
-        tiles[i + rows + 1].bomb, // bottom right
-        tiles[i + rows].bomb, // bottom
-        tiles[i + rows - 1].bomb, // bottom left
+        tiles[i + columns + 1].bomb, // bottom right
+        tiles[i + columns].bomb, // bottom
+        tiles[i + columns - 1].bomb, // bottom left
         tiles[i - 1].bomb, // left
       ]
     }
