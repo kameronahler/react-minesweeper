@@ -1,12 +1,13 @@
 .field {
+  background: linear-gradient(-15deg, #f4f4f4, #f8f8f8);
   display: flex;
   text-align: center;
 
   &__inner {
     display: inline-grid;
     grid-gap: 1rem;
-    grid-template-columns: repeat(var(--global-columns, 4), 50px);
-    grid-template-rows: repeat(var(--global-rows, 4), 50px);
+    grid-template-columns: repeat(var(--global-columns, 4), 72px);
+    grid-template-rows: repeat(var(--global-rows, 4), 72px);
     margin: auto;
   }
 }

@@ -1,0 +1,16 @@
+.tile {
+  $outer-top-highlight: -4px -6px 14px rgba(white, 0.95);
+  $outer-bottom-shadow: 4px 8px 12px rgba(black, 0.0625);
+  $revealed-inner-top-shadow: inset 3px 4px 6px rgba(black, 0.0375);
+  $revealed-inner-bottom-highlight: inset -4px -4px 6px rgba(white, 0.125);
+
+  background: #f1f1f1 linear-gradient(-225deg, rgba(white, 0.125), #f8f8f8);
+  border-radius: 8px;
+  border: unset;
+  box-shadow: $outer-top-highlight, $outer-bottom-shadow;
+
+  &--revealed {
+    box-shadow: $revealed-inner-top-shadow, $revealed-inner-bottom-highlight;
+    background: #f1f1f1;
+  }
+}

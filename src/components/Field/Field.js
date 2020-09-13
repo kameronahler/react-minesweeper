@@ -14,7 +14,9 @@ export default function Field() {
     <div className='field'>
       <div className='field__inner'>
         {tiles.map((el, index) => {
-          return <Tile key={index} index={index} text={el.text} />
+          return (
+            <Tile key={index} index={index} hidden={el.hidden} text={el.text} />
+          )
         })}
       </div>
     </div>
