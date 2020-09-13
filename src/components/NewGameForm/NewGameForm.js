@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { GameContext } from '../../store/GlobalStateWrapper'
 
-export default function NewGameButton() {
+export default function NewGameForm() {
   const [
     alive,
     ,
