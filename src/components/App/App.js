@@ -3,13 +3,15 @@ import { GlobalStateWrapper } from '../../store/GlobalStateWrapper'
 import Header from '../Header/Header'
 import NewGameForm from '../NewGameForm/NewGameForm'
 import Field from '../Field/Field'
+import './App.scss'
 
 export default function App() {
   return (
     <GlobalStateWrapper>
-      <Header />
-      <NewGameForm />
-      <Field />
+      <div className='app-container'>
+        <Header />
+        <Field />
+      </div>
     </GlobalStateWrapper>
   )
 }

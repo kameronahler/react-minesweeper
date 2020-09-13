@@ -1,5 +1,6 @@
 import React, { useContext } from 'react'
 import { GameContext } from '../../store/GlobalStateWrapper'
+import NewGameForm from '../NewGameForm/NewGameForm'
 
 export default function Header() {
   const [alive] = useContext(GameContext)
@@ -10,6 +11,7 @@ export default function Header() {
           ? `Let's play Minecraft`
           : 'When did you get so good at Minecraft?'}
       </h1>
+      <NewGameForm />
     </header>
   )
 }
