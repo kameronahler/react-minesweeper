@@ -1,0 +1,11 @@
+.header {
+  align-items: center;
+  background: lightgray;
+  display: flex;
+  padding: 1rem 2rem;
+
+  &__heading {
+    flex: 1 1 auto;
+    margin: unset;
+  }
+}

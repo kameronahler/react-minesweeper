@@ -12,9 +12,11 @@ export default function Field() {
 
   return (
     <div className='field'>
-      {tiles.map((el, index) => {
-        return <Tile key={index} index={index} text={el.text} />
-      })}
+      <div className='field__inner'>
+        {tiles.map((el, index) => {
+          return <Tile key={index} index={index} text={el.text} />
+        })}
+      </div>
     </div>
   )
 }
